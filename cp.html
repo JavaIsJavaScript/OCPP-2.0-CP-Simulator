@@ -75,7 +75,7 @@
         OCPP-J2.0
     </option>
 </select>
-<input id="CP" type="text" placeholder="Id Станции" value="ws://127.0.0.1:8080/steve/websocket/CentralSystemService/"/>
+<input id="CP" type="text" placeholder="Id Станции" value="ws://127.0.0.1:8080/steve/websocket/CentralSystemService/CP"/>
 <button id="connect">Connect</button>
 <button id="send">Authorize</button>
 <button id="start">Start Transaction</button>
@@ -84,7 +84,7 @@
 <button id="mv">Meter Values</button>
 <button id="status">Status Notification</button>
 <button id="data_transfer">Data Tranfer</button>
-
+<button id="firmwarestatus">Firmware Status Notification</button>
 
 <div>
     <span class="indicator" id="red">____</span>
@@ -293,6 +293,29 @@
         _websocket.send(Auth);
 	
 	}
+	function Authorize(){
+		
+		sessionStorage.setItem('LastAction', "Authorize");
+        var Auth = JSON.stringify([2, id, "Authorize", {
+			"idToken": {
+				"idToken": "TAG1",
+				"type": "Central"
+			}
+		}]);
+        _websocket.send(Auth);
+	
+	}
+	
+	function FirmwareStatusNotification(){
+		
+		sessionStorage.setItem('LastAction', "FirmwareStatusNotification");
+        var FirmStat = JSON.stringify([2, id, "FirmwareStatusNotification", {
+			"status": "Installed",
+			"requestId": "0"
+		}]);
+        _websocket.send(FirmStat);
+	
+	}
 	
 	function startTransaction(){
 		sessionStorage.setItem('LastAction', "startTransaction");
@@ -300,12 +323,23 @@
         $('#green').show();
         connector_locked = true;
         logMsg("Connector status changed to: " + connector_locked);
-        var strtT = JSON.stringify([2, id, "StartTransaction", {
-            "connectorId": 2,
-            "idTag": "B4F62CEF",
-            "timestamp": formatDate(new Date()),
-            "meterStart": 0,
-            "reservationId": 0
+        var strtT = JSON.stringify([2, id, "TransactionEvent", {
+            "eventType": "Started",
+			"timestamp": formatDate(new Date()),
+			"triggerReason": "Authorized",
+			"seqNo": 0,
+			"reservationId": 0,
+			"idToken": {
+				"idToken": "TAG1",
+				"type" : "Central"
+			},
+			"evse": {
+				"id": 2
+			},
+			"transactionData": {
+				"id": "0",
+				"remoteStartId": "0"
+			}
         }]);
         _websocket.send(strtT);
 	}
@@ -400,6 +434,10 @@
     $('#stop').click(function () {
 		stopTransaction();
     });
+	
+	$('#firmwarestatus').click(function () {
+		FirmwareStatusNotification();
+    });
 
     $('#mv').click(function () {
 		sessionStorage.setItem('LastAction', "MeterValues");
@@ -416,13 +454,10 @@
     $('#status').click(function () {
 	sessionStorage.setItem('LastAction', "StatusNotification");
         var SN = JSON.stringify([2, id, "StatusNotification", {
-            "connectorId": 2,
-            "status": "Available",
-            "errorCode": "NoError",
-            "info": "",
-            "timestamp": formatDate(new Date()),
-            "vendorId": "",
-            "vendorErrorCode": ""
+			"timestamp": formatDate(new Date()),
+			"connectorStatus": "Available",
+			"evseId": 2,
+			"connectorId": 2
         }]);
         _websocket.send(SN);
 
