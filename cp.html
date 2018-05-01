@@ -141,7 +141,10 @@
 
     var start_id = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    var possibleidTran = "0123456789";
     var id = randonId();
+	var lastTranId;
+    var idtran = randonIdTran();
     var _websocket = null;
 
     var connector_locked = false;
@@ -152,6 +155,14 @@
             id += possible.charAt(Math.floor(Math.random() * possible.length));
         }
         return id;
+    }
+	
+	function randonIdTran() {
+        idtran = "";
+        for (var i = 0; i < 5; i++) {
+            idtran += possibleidTran.charAt(Math.floor(Math.random() * possibleidTran.length));
+        }
+        return idtran;
     }
 
     function wsConnect() {
@@ -196,7 +207,6 @@
 						});
 						var TransactionId = (array[0]);
 						sessionStorage.setItem('TransactionId', TransactionId);
-						
 					}
 					logMsg("Response recieved successfully!");
                 } else if ((JSON.parse(msg.data))[0] === 4) {
@@ -323,12 +333,12 @@
         $('#green').show();
         connector_locked = true;
         logMsg("Connector status changed to: " + connector_locked);
+		lastTranId = randonIdTran();
         var strtT = JSON.stringify([2, id, "TransactionEvent", {
             "eventType": "Started",
 			"timestamp": formatDate(new Date()),
 			"triggerReason": "Authorized",
 			"seqNo": 0,
-			"reservationId": 0,
 			"idToken": {
 				"idToken": "TAG1",
 				"type" : "Central"
@@ -337,7 +347,7 @@
 				"id": 2
 			},
 			"transactionData": {
-				"id": "0",
+				"id": lastTranId,
 				"remoteStartId": "0"
 			}
         }]);
@@ -351,11 +361,30 @@
         connector_locked = false;
         logMsg("Connector status changed to: " + connector_locked);
         $('#yellow').show();
-        var stpT = JSON.stringify([2, id, "StopTransaction",{
-            "transactionId": ssid,
-            "idTag": "B4F62CEF",
-            "timestamp": formatDate(new Date()),
-            "meterStop": 20
+        var stpT = JSON.stringify([2, id, "TransactionEvent",{
+            "eventType": "Ended",
+			"timestamp": formatDate(new Date()),
+			"triggerReason": "Deauthorized",
+			"seqNo": 0,
+			"idToken": {
+				"idToken": "TAG1",
+				"type" : "Central"
+			},
+			"evse": {
+				"id": 2
+			},
+			"transactionData": {
+				"id": lastTranId,
+				"remoteStartId": "0"
+			},
+			"meterValue": [{
+				"timestamp": formatDate(new Date()),
+				"sampledValue": [
+				  {
+					"value": "20"
+				  }
+				]
+			  }]
         }]);
         _websocket.send(stpT);
 	}
@@ -441,7 +470,36 @@
 
     $('#mv').click(function () {
 		sessionStorage.setItem('LastAction', "MeterValues");
-        var MV = JSON.stringify([2, id, "MeterValues", {"connectorId": 1}]);
+        var MV = JSON.stringify([2, id, "MeterValues", {
+			"evseId": 2,
+			"meterValue": [
+          {
+            "timestamp": formatDate(new Date()),
+            "sampledValue": [
+              {
+                "value": "0",
+                "measurand": "Energy.Active.Import.Register" 
+              },
+              {
+                "value": "0",
+                "measurand": "Energy.Reactive.Import.Register" 
+              }
+            ]
+          },{
+            "timestamp": formatDate(new Date()),
+            "sampledValue": [
+              {
+                "value": "20",
+                "measurand": "Energy.Active.Import.Register" 
+              },
+              {
+                "value": "20",
+                "measurand": "Energy.Reactive.Import.Register" 
+              }
+            ]
+          }
+        ]
+		}]);
         _websocket.send(MV);
 
     });
