@@ -141,7 +141,7 @@
 
     var start_id = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var possibleidTran = "0123456789";
+    //var possibleidTran = "0123456789";
     var id = randonId();
 	var lastTranId;
     var idtran = randonIdTran();
@@ -157,11 +157,17 @@
         return id;
     }
 	
-	function randonIdTran() {
+	/*function randonIdTran() {
         idtran = "";
         for (var i = 0; i < 5; i++) {
             idtran += possibleidTran.charAt(Math.floor(Math.random() * possibleidTran.length));
         }
+        return idtran;
+    }*/
+	
+	function randonIdTran() {
+        idtran = "";
+            idtran = Math.floor(Math.random() * 100001);  
         return idtran;
     }
 
