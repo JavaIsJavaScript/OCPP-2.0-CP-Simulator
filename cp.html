@@ -355,7 +355,15 @@
 			"transactionData": {
 				"id": lastTranId,
 				"remoteStartId": "0"
-			}
+			},
+			"meterValue": [{
+				"timestamp": formatDate(new Date()),
+				"sampledValue": [
+				  {
+					"value": "0"
+				  }
+				]
+			  }]
         }]);
         _websocket.send(strtT);
 	}
