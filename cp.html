@@ -145,6 +145,8 @@
     var id = randonId();
 	var lastTranId;
     var idtran = randonIdTran();
+	var possChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	var randChar = randonChar();
     var _websocket = null;
 
     var connector_locked = false;
@@ -167,8 +169,16 @@
 	
 	function randonIdTran() {
         idtran = "";
-            idtran = Math.floor(Math.random() * 100001);  
+            idtran = randChar + (Math.floor(Math.random() * 100001)).toString();  
         return idtran;
+    }
+	
+	function randonChar() {
+        randChar = "";
+        for (var i = 0; i < 3; i++) {
+            randChar += possChar.charAt(Math.floor(Math.random() * possChar.length));
+        }
+        return randChar;
     }
 
     function wsConnect() {
