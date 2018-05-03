@@ -141,12 +141,12 @@
 
     var start_id = "";
     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    //var possibleidTran = "0123456789";
     var id = randonId();
 	var lastTranId;
     var idtran = randonIdTran();
 	var possChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	var randChar = randonChar();
+	var lastRandChar;
     var _websocket = null;
 
     var connector_locked = false;
@@ -159,17 +159,9 @@
         return id;
     }
 	
-	/*function randonIdTran() {
-        idtran = "";
-        for (var i = 0; i < 5; i++) {
-            idtran += possibleidTran.charAt(Math.floor(Math.random() * possibleidTran.length));
-        }
-        return idtran;
-    }*/
-	
 	function randonIdTran() {
         idtran = "";
-            idtran = randChar + (Math.floor(Math.random() * 100001)).toString();  
+            idtran = lastRandChar + (Math.floor(Math.random() * 100001)).toString();  
         return idtran;
     }
 	
@@ -349,6 +341,7 @@
         $('#green').show();
         connector_locked = true;
         logMsg("Connector status changed to: " + connector_locked);
+		lastRandChar = randonChar();
 		lastTranId = randonIdTran();
         var strtT = JSON.stringify([2, id, "TransactionEvent", {
             "eventType": "Started",
@@ -360,7 +353,8 @@
 				"type" : "Central"
 			},
 			"evse": {
-				"id": 2
+				"id": 2,
+				"connectorId": 2
 			},
 			"transactionData": {
 				"id": lastTranId,
@@ -395,7 +389,8 @@
 				"type" : "Central"
 			},
 			"evse": {
-				"id": 2
+				"id": 2,
+				"connectorId": 2
 			},
 			"transactionData": {
 				"id": lastTranId,
