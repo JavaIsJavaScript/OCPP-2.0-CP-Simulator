@@ -224,44 +224,107 @@
                     id = (JSON.parse(msg.data))[1];
 
                     switch (ddata[2]) {
-                        case "Reset":
-                            //Reset type SOFT, HARD
-                            var ResetS = JSON.stringify([3, id, {"status": "Accepted"}]);
-                            _websocket.send(ResetS);
-                            location.reload();
+						case "ChangeAvailability":
+                            var changeAvail = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(changeAvail);
                             break;
-                        case "RemoteStopTransaction":
-                            //TransactionID
-                            var remStp = JSON.stringify([3, id, {"status": "Accepted"}]);
-                            _websocket.send(remStp);
+						case "SetVariables":
+                            
+                            break;
+						case "ClearCache":
+                            var clearCache = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(clearCache);
+                            break;
+						case "GetLog":
+                            var getLog = JSON.stringify([3, id, {"status": "Accepted", "filename": "somefile.txt"}]);
+                            _websocket.send(getLog);
+                            break;
+						case "RequestStartTransaction":
+                            var reqStartTrans = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(reqStartTrans);
+							 startTransaction();
+                            break;
+						case "RequestStopTransaction":
+                            var reqStopTrans = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(reqStopTrans);
 							
 							var stop_id = (JSON.parse(msg.data)[3].transactionId);
-							
 							stopTransaction(stop_id);
+                            break;
+                        case "Reset":
+                            var ResetS = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(ResetS);
+                            //location.reload();
+                            break;
+						case "UnlockConnector":
+                            var unlockCon = JSON.stringify([3, id, {"status": "Unlocked"}]);
+                            _websocket.send(unlockCon);
+                            connector_locked = false;
                             $('.indicator').hide();
                             $('#yellow').show();
+                            logMsg("Connector status changed to: "+connector_locked);
+							statusNotification();
                             break;
-                        case "RemoteStartTransaction":
-                            //Need to get idTag, connectorId (map - ddata[3])
+						case "UpdateFirmware":
+                            var updFirm = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(updFirm);
+                            break;
+						case "ReserveNow":
+                            var resNow = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(resNow);
+                            break;
+						case "CancelReservation":
+                            var cancelRes = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(cancelRes);
+                            break;
+						case "DataTransfer":
+                            var dataTrans = JSON.stringify([3, id, {"status": "Accepted", "data": "some data"}]);
+                            _websocket.send(dataTrans);
+                            break;
+						case "GetVariables":
+                            
+                            break;
+						case "GetLocalListVersion":
+                            var gLocList = JSON.stringify([3, id, {"versionNumber": 0}]);
+                            _websocket.send(gLocList);
+                            break;
+						case "SendLocalList":
+                            var sendLocList = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(sendLocList);
+                            break;
+						case "TriggerMessage":
+                            var triggerMsg = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(triggerMsg);
 							
-                            var remStrt = JSON.stringify([3, id, {"status": "Accepted"}]);
-                            _websocket.send(remStrt);
-                            startTransaction();
-							
+							var req_message = (JSON.parse(msg.data)[3].requestedMessage);
+							if(req_message == "BootNotification") { BootNotification(); } 
+							if(req_message == "LogStatusNotification") { } 
+							if(req_message == "FirmwareStatusNotification") { FirmwareStatusNotification(); } 
+							if(req_message == "Heartbeat") { send_heartbeat(); } 
+							if(req_message == "MeterValues") { meterValues(); } 
+							if(req_message == "SignChargingStationCertificate") { } 
+							if(req_message == "SignV2GCertificate") { } 
+							if(req_message == "StatusNotification") { statusNotification(); } 
+							if(req_message == "TransactionEvent") { }
                             break;
-                        case "UnlockConnector": /////////ERROR!!!!!!!!
-                            //connectorId
-                            var UC = JSON.stringify([3, id, {"status": "Accepted"}]);
-                            _websocket.send(UC);
-                            // connector_locked = false;
-                            // $('.indicator').hide();
-                            //$('#yellow').show();
-                            //logMsg("Connector status changed to: "+connector_locked);
-                            break;
-                        default:
+						case "GetCompositeSchedule":
+                            
+							break;
+						case "ClearChargingProfile":
+                            var clearChargPrfl = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(clearChargPrfl);
+							break;
+						case "SetChargingProfile":
+                            var setChargPrlf = JSON.stringify([3, id, {"status": "Accepted"}]);
+                            _websocket.send(setChargPrlf);
+							break;
+						default:
                             var error = JSON.stringify([4, id]);
                             _websocket.send(error);
-                            break;
+                            break;	
+							
+                        /**/
+                        
                     }
 
                 }
@@ -374,7 +437,7 @@
 	
 	function stopTransaction(transaction_id = false){
 		sessionStorage.setItem('LastAction', "stopTransaction");	
-		transaction_id == false ? ssid = sessionStorage.getItem('TransactionId') : ssid = transaction_id;
+		transaction_id == false ? lastTranId = lastTranId : lastTranId = transaction_id;
         $('.indicator').hide();
         connector_locked = false;
         logMsg("Connector status changed to: " + connector_locked);
@@ -452,6 +515,52 @@
                 _websocket.send(BN);
 	}
 	
+	function statusNotification() {
+		sessionStorage.setItem('LastAction', "StatusNotification");
+        var SN = JSON.stringify([2, id, "StatusNotification", {
+			"timestamp": formatDate(new Date()),
+			"connectorStatus": "Available",
+			"evseId": 2,
+			"connectorId": 2
+        }]);
+        _websocket.send(SN);
+	}
+	
+	function meterValues() {
+		sessionStorage.setItem('LastAction', "MeterValues");
+        var MV = JSON.stringify([2, id, "MeterValues", {
+			"evseId": 2,
+			"meterValue": [
+          {
+            "timestamp": formatDate(new Date()),
+            "sampledValue": [
+              {
+                "value": "0",
+                "measurand": "Energy.Active.Import.Register" 
+              },
+              {
+                "value": "0",
+                "measurand": "Energy.Reactive.Import.Register" 
+              }
+            ]
+          },{
+            "timestamp": formatDate(new Date()),
+            "sampledValue": [
+              {
+                "value": "20",
+                "measurand": "Energy.Active.Import.Register" 
+              },
+              {
+                "value": "20",
+                "measurand": "Energy.Reactive.Import.Register" 
+              }
+            ]
+          }
+        ]
+		}]);
+        _websocket.send(MV);
+	}
+	
 	function startHB(interval){
 		setInterval(send_heartbeat,interval);
 	}
@@ -488,39 +597,7 @@
     });
 
     $('#mv').click(function () {
-		sessionStorage.setItem('LastAction', "MeterValues");
-        var MV = JSON.stringify([2, id, "MeterValues", {
-			"evseId": 2,
-			"meterValue": [
-          {
-            "timestamp": formatDate(new Date()),
-            "sampledValue": [
-              {
-                "value": "0",
-                "measurand": "Energy.Active.Import.Register" 
-              },
-              {
-                "value": "0",
-                "measurand": "Energy.Reactive.Import.Register" 
-              }
-            ]
-          },{
-            "timestamp": formatDate(new Date()),
-            "sampledValue": [
-              {
-                "value": "20",
-                "measurand": "Energy.Active.Import.Register" 
-              },
-              {
-                "value": "20",
-                "measurand": "Energy.Reactive.Import.Register" 
-              }
-            ]
-          }
-        ]
-		}]);
-        _websocket.send(MV);
-
+		meterValues();
     });
     $('#heartbeat').click(function () {
         send_heartbeat();
@@ -529,15 +606,7 @@
     });
 
     $('#status').click(function () {
-	sessionStorage.setItem('LastAction', "StatusNotification");
-        var SN = JSON.stringify([2, id, "StatusNotification", {
-			"timestamp": formatDate(new Date()),
-			"connectorStatus": "Available",
-			"evseId": 2,
-			"connectorId": 2
-        }]);
-        _websocket.send(SN);
-
+		statusNotification();
     });
 
     $('#data_transfer').click(function () {
