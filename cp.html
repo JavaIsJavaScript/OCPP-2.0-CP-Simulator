@@ -300,7 +300,31 @@
 							if(req_message == "TransactionEvent") { }
                             break;
 						case "GetCompositeSchedule":
-                            
+                            var getComp = JSON.stringify([3, id, {
+							"status": 'Accepted',
+							"evseId": 0,
+							"schedule": {
+								"startDateTime": formatDate(new Date()),
+								"chargingSchedule": {
+									"duration": 86400,
+									"chargingRateUnit": "W",
+									"chargingSchedulePeriod": [{
+											"startPeriod": 0,
+											"limit": 11000,
+											"numberPhases": 3
+										}, {
+											"startPeriod": 28800,
+											"limit": 6000,
+											"numberPhases": 3
+										}, {
+											"startPeriod": 72000,
+											"limit": 11000,
+											"numberPhases": 3
+										}]
+									}
+								}
+							}]);
+                            _websocket.send(getComp);
 							break;
 						case "ClearChargingProfile":
                             var clearChargPrfl = JSON.stringify([3, id, {"status": "Accepted"}]);
