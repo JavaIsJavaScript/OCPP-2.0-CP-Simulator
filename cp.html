@@ -79,6 +79,7 @@
 <button id="connect">Connect</button>
 <button id="send">Authorize</button>
 <button id="start">Start Transaction</button>
+<button id="update">Update Transaction</button>
 <button id="stop">Stop Transaction</button>
 <button id="heartbeat">Heartbeat</button>
 <button id="mv">Meter Values</button>
@@ -450,6 +451,46 @@
         _websocket.send(strtT);
 	}
 	
+	function updateTransaction(){
+		sessionStorage.setItem('LastAction', "updateTransaction");
+        var updTrns = JSON.stringify([2, id, "TransactionEvent",{
+            "eventType": "Updated",
+			"timestamp": formatDate(new Date()),
+			"triggerReason": "MeterValuePeriodic",
+			"seqNo": 0,
+			"idToken": {
+				"idToken": "TAG1",
+				"type" : "Central"
+			},
+			"evse": {
+				"id": 2,
+				"connectorId": 2
+			},
+			"transactionData": {
+				"id": lastTranId,
+				"remoteStartId": "0"
+			},
+			"meterValue": [{
+				"timestamp": formatDate(new Date()),
+				"sampledValue": [
+				  {
+					"value": "10"
+				  },{
+					"value": "15",
+					"context": "Sample.Periodic",
+					"measurand": "Energy.Reactive.Export.Register",
+					"phase": "L1",
+					"location": "EV",
+					"unitOfMeasure": {
+						"unit": "5"
+					}
+				  }
+				]
+			  }]
+        }]);
+        _websocket.send(updTrns);
+	}
+	
 	function stopTransaction(transaction_id = false){
 		sessionStorage.setItem('LastAction', "stopTransaction");	
 		transaction_id == false ? lastTranId = lastTranId : lastTranId = transaction_id;
@@ -601,6 +642,10 @@
     $('#start').click(function () {
 		startTransaction();
 
+    });
+	
+	$('#update').click(function () {
+		updateTransaction();
     });
 
     $('#stop').click(function () {
