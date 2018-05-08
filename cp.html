@@ -275,7 +275,28 @@
                             _websocket.send(dataTrans);
                             break;
 						case "GetVariables":
-                            
+                            var getVars = JSON.stringify([3, id, {
+								"getVariableResult": [{
+									"attributeStatus": "Accepted",
+									"attributeValue": "true",
+									"variable": {
+										"name": "SampledDataAvailable"
+									},
+									"component": {
+										"name": "DeviceDataCtrlr"
+									}
+								},{
+								"attributeStatus": "Accepted",
+									"attributeValue": "360",
+									"variable": {
+										"name": "AlignedDataInterval"
+									},
+									"component": {
+										"name": "DeviceDataCtrlr"
+									}
+								}]
+							}]);
+                            _websocket.send(getVars);
                             break;
 						case "GetLocalListVersion":
                             var gLocList = JSON.stringify([3, id, {"versionNumber": 0}]);
