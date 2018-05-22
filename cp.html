@@ -154,7 +154,7 @@
 			}
 
 			function randonIdTran() {
-				var rand_nr = Math.floor(Math.random() * 25) + 1;
+				var rand_nr = Math.floor(Math.random() * 36) + 1;
 				idtran = "";
 				for (var i = 0; i < rand_nr; i++)
 					idtran += possChar.charAt(Math.floor(Math.random() * possChar.length));
@@ -219,7 +219,18 @@
 									_websocket.send(changeAvail);
 									break;
 								case "SetVariables":
-
+									var setVar = JSON.stringify([3, id, {
+										"setVariableResult": [{
+											"attributeStatus": "Accepted",
+											"component": {
+												"name": "AuthCtrlr"
+											},
+											"variable": {
+												"name": "variable name"
+											}
+										}]
+									}]);
+									_websocket.send(setVar);
 									break;
 								case "ClearCache":
 									var clearCache = JSON.stringify([3, id, {
@@ -436,6 +447,53 @@
 										"status": "Accepted"
 									}]);
 									_websocket.send(getBaseRep);
+									break;
+								case "CostUpdated":
+									var costUpdtd = JSON.stringify([3, id, {}]);
+									_websocket.send(costUpdtd);
+									break;
+								case "GetMonitoringReport":
+									var getMonRep = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(getMonRep);
+									break;
+								case "GetReport":
+									var getRep = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(getRep);
+									break;
+								case "SetMonitoringBase":
+									var setMonBase = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(setMonBase);
+									break;
+								case "SetMonitoringLevel":
+									var setMonLevel = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(setMonLevel);
+									break;
+								case "SetVariableMonitoring":
+									var setVarMon = JSON.stringify([3, id, {"setMonitoringResult": [{
+										"id": 1,
+										"type": "Periodic",
+										"severity": 9,
+										"status": "Accepted",
+										"component": {
+											"name": "some component"
+											},
+										"variable":{
+											"name": "some variable"
+											}
+									}]}]);
+									_websocket.send(setVarMon);
+									break;
+								case "UnpublishFirmware":
+									var unpFirm = JSON.stringify([3, id, {"status": "Unpublished"}]);
+									_websocket.send(unpFirm);
+									break;
+								case "CustomerInformation":
+									var custmrInfo = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(custmrInfo);
+									break;
+								case "SetDisplayMessage":
+									var setDispMsg = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(setDispMsg);
 									break;
 								default:
 									var error = JSON.stringify([4, id]);
