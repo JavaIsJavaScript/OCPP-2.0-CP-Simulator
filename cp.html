@@ -137,10 +137,8 @@
 			var c = 0;
 			var start_id = "";
 			var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-			var possChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 			var id = randonId();
 			var lastTranId;
-			var idtran = randonIdTran();
 			var _websocket = null;
 
 			var connector_locked = false;
@@ -153,12 +151,13 @@
 				return id;
 			}
 
-			function randonIdTran() {
-				var rand_nr = Math.floor(Math.random() * 36) + 1;
-				idtran = "";
-				for (var i = 0; i < rand_nr; i++)
-					idtran += possChar.charAt(Math.floor(Math.random() * possChar.length));
-				return idtran;
+			function guid() {
+				function s4() {
+					return Math.floor((1 + Math.random()) * 0x10000)
+						.toString(16)
+						.substring(1);
+					}
+				return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 			}
 
 			function wsConnect() {
@@ -574,8 +573,8 @@
 				$('#green').show();
 				connector_locked = true;
 				logMsg("Connector status changed to: " + connector_locked);
-				lastTranId = randonIdTran();
-				var strtT = JSON.stringify([2, id, "TransactionEvent", {
+				lastTranId = guid();
+				var strtT = JSON.stringify([2, id, "TransactionEvent", { 
 					"eventType": "Started",
 					"timestamp": formatDate(new Date()),
 					"triggerReason": "Authorized",
