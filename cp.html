@@ -89,6 +89,7 @@
 		<button id="status">Status Notification</button>
 		<button id="data_transfer">Data Tranfer</button>
 		<button id="firmwarestatus">Firmware Status Notification</button>
+		<button id="clearedChargingLimit">Cleared Charging Limit</button>
 
 		<div>
 			<span class="indicator" id="red">____</span>
@@ -109,7 +110,7 @@
 					day = ('0' + day.slice(-2));
 				}
 
-				var monthIndex = String(date.getMonth());
+				var monthIndex = String(date.getMonth() + 1);
 				if (monthIndex.length < 2) {
 					monthIndex = ('0' + monthIndex.slice(-2));
 				}
@@ -491,6 +492,8 @@
 									_websocket.send(custmrInfo);
 									break;
 								case "SetDisplayMessage":
+									var setmessage = (JSON.parse(msg.data)[3].message.message.content);
+									logMsg("Display message: <b><i>" + setmessage + "</i></b>");
 									var setDispMsg = JSON.stringify([3, id, {"status": "Accepted"}]);
 									_websocket.send(setDispMsg);
 									break;
@@ -537,20 +540,8 @@
 					"idToken": {
 						"idToken": "TAG1",
 						"type": "Central"
-					}
-				}]);
-				_websocket.send(Auth);
-
-			}
-
-			function Authorize() {
-
-				sessionStorage.setItem('LastAction', "Authorize");
-				var Auth = JSON.stringify([2, id, "Authorize", {
-					"idToken": {
-						"idToken": "TAG1",
-						"type": "Central"
-					}
+					},
+					"evseId": [1,2,3,4] //Just to test 
 				}]);
 				_websocket.send(Auth);
 
@@ -813,6 +804,16 @@
 					"data": ""
 				}]);
 				_websocket.send(DT);
+
+			});
+			
+			$('#clearedChargingLimit').click(function() {
+				sessionStorage.setItem('LastAction', "ClearedChargingLimit");
+				var CCL = JSON.stringify([2, id, "ClearedChargingLimit", {
+					"chargingLimitSource": "Other",
+					"evseId": "2"
+				}]);
+				_websocket.send(CCL);
 
 			});
 
