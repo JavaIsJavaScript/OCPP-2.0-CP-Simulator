@@ -497,6 +497,46 @@
 									var setDispMsg = JSON.stringify([3, id, {"status": "Accepted"}]);
 									_websocket.send(setDispMsg);
 									break;
+								case "DeleteCertificate":
+									var delCert = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(delCert);
+									break;
+								case "GetChargingProfiles":
+									var getChargPrfl = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(getChargPrfl);
+									break;
+								case "GetDisplayMessages":
+									var getDispMsg = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(getDispMsg);
+									break;
+								case "GetInstalledCertificateIds":
+									var getInstalledCertIds = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(getInstalledCertIds);
+									break;
+								case "GetTransactionStatus":
+									var getTranStat = JSON.stringify([3, id, {"messagesInQueue": "true"}]);
+									_websocket.send(getTranStat);
+									break;
+								case "InstallCertificate":
+									var installCert = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(installCert);
+									break;
+								case "NotifyCentralChargingNeeds":
+									var noCentChargNeed = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(noCentChargNeed);
+									break;
+								case "PublishFirmware":
+									var pubFirmware = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(pubFirmware);
+									break;
+								case "Renegotiate15118Schedule":
+									var renSchedule = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(renSchedule);
+									break;
+								case "SetNetworkProfile":
+									var setNetProfl = JSON.stringify([3, id, {"status": "Accepted"}]);
+									_websocket.send(setNetProfl);
+									break;
 								default:
 									var error = JSON.stringify([4, id]);
 									_websocket.send(error);
