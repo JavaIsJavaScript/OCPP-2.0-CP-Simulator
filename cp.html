@@ -78,18 +78,26 @@
 				OCPP-J2.0
 			</option>
 		</select>
-		<input id="CP" type="text" placeholder="ChargePoint ID" value="ws://127.0.0.1:8080/steve/websocket/CentralSystemService/CP" />
+		<input id="CP" type="text" placeholder="ChargePoint ID" value="ws://10.15.1.20:9000/TMH_Test" />
 		<button id="connect">Connect</button>
 		<button id="send">Authorize</button>
-		<button id="start">Start Transaction</button>
-		<button id="update">Update Transaction</button>
+		<button id="start">Start Transaction - EVDetected</button>
+        <button id="update">Update Transaction - EVDetected</button>
+        <button id="update_suspendedevse">Update Transaction - SuspendedEVSE</button>
+        <button id="update_suspendedev">Update Transaction - SuspendedEV</button>
+        <button id="update_charging">Update Transaction - Charging</button>
 		<button id="stop">Stop Transaction</button>
-		<button id="heartbeat">Heartbeat</button>
+        <button id="heartbeat">Heartbeat</button>
 		<button id="mv">Meter Values</button>
 		<button id="status">Status Notification</button>
 		<button id="data_transfer">Data Tranfer</button>
 		<button id="firmwarestatus">Firmware Status Notification</button>
 		<button id="clearedChargingLimit">Cleared Charging Limit</button>
+        <button id="logstatus_uploading">LogStatus Notification - Uploading</button>
+		<button id="logstatus_uploaded">LogStatus Notification - Uploaded</button>
+		<button id="notify_charging_limit">Notify Charging Limit - 10 A</button>
+        <button id="notify_ev_charging_schedule">Notify EV Charging Schedule - 10 A</button>
+
 
 		<div>
 			<span class="indicator" id="red">____</span>
@@ -119,7 +127,7 @@
 				if (h < 3) {
 					h = 24 - h;
 				}
-				h = String(h - 3);
+				h = String(h - 1);
 				if (h.length < 2) {
 					h = ('0' + h.slice(-2));
 				}
@@ -578,8 +586,8 @@
 				sessionStorage.setItem('LastAction', "Authorize");
 				var Auth = JSON.stringify([2, id, "Authorize", {
 					"idToken": {
-						"idToken": "TAG1",
-						"type": "Central"
+						"idToken": "0478446A313480",
+						"type": "ISO14443"
 					},
 					"evseId": [1,2,3,4] //Just to test 
 				}]);
@@ -611,8 +619,8 @@
 					"triggerReason": "Authorized",
 					"seqNo": 0,
 					"idToken": {
-						"idToken": "TAG1",
-						"type": "Central"
+						"idToken": "0478446A313480",
+						"type": "ISO14443"
 					},
 					"evse": {
 						"id": 2,
@@ -620,19 +628,20 @@
 					},
 					"transactionData": {
 						"id": lastTranId,
-						"remoteStartId": "0"
+						"remoteStartId": "0",
+                        "chargingState": "EVDetected"
 					},
 					"meterValue": [{
 						"timestamp": formatDate(new Date()),
 						"sampledValue": [{
 							"value": "0"
-						}]
+						}] 
 					}]
 				}]);
 				_websocket.send(strtT);
 			}
 
-			function updateTransaction() {
+			function updateTransaction(charger_state = "EVDetected") {
 				sessionStorage.setItem('LastAction', "updateTransaction");
 				var updTrns = JSON.stringify([2, id, "TransactionEvent", {
 					"eventType": "Updated",
@@ -640,8 +649,8 @@
 					"triggerReason": "MeterValuePeriodic",
 					"seqNo": 0,
 					"idToken": {
-						"idToken": "TAG1",
-						"type": "Central"
+						"idToken": "0478446A313480",
+						"type": "ISO14443"
 					},
 					"evse": {
 						"id": 2,
@@ -649,7 +658,8 @@
 					},
 					"transactionData": {
 						"id": lastTranId,
-						"remoteStartId": "0"
+						"remoteStartId": "0",
+                        "chargingState": charger_state
 					},
 					"meterValue": [{
 						"timestamp": formatDate(new Date()),
@@ -683,15 +693,15 @@
 					"triggerReason": "Deauthorized",
 					"seqNo": 0,
 					"idToken": {
-						"idToken": "TAG1",
-						"type": "Central"
+						"idToken": "0478446A313480",
+			 			"type": "ISO14443"
 					},
 					"evse": {
-						"id": 2,
+			 			"id": 2,
 						"connectorId": 2
 					},
 					"transactionData": {
-						"id": lastTranId,
+			 			"id": lastTranId,
 						"remoteStartId": "0"
 					},
 					"meterValue": [{
@@ -699,9 +709,9 @@
 						"sampledValue": [{
 							"value": "20"
 						}]
-					}]
+			 		}]
 				}]);
-				_websocket.send(stpT);
+			 	_websocket.send(stpT);
 			}
 
 			function getConfiguration() {
@@ -754,9 +764,9 @@
 					"timestamp": formatDate(new Date()),
 					"connectorStatus": "Available",
 					"evseId": 2,
-					"connectorId": 2
+			 		"connectorId": 2
 				}]);
-				_websocket.send(SN);
+			 	_websocket.send(SN);
 			}
 
 			function meterValues() {
@@ -795,6 +805,46 @@
 				var HB = JSON.stringify([2, id, "Heartbeat", {}]);
 				_websocket.send(HB);
 			}
+			
+            function LogStatusNotification(upload_status = "Uploading") {
+				sessionStorage.setItem('LastAction', "LogStatusNotification");
+				var LSN = JSON.stringify([2, id, "LogStatusNotification", {
+					"status": upload_status,
+					"requestId": 1,
+				}]);
+			 	_websocket.send(LSN);
+			}
+
+             function NotifyChargingLimit(charge_limit = 10, limit_source = "SO") {
+				sessionStorage.setItem('LastAction', "NotifyChargingLimit");
+				var LSN = JSON.stringify([2, id, "NotifyChargingLimit", {
+					"evseId": 1,
+                    "chargingLimit": {
+                        "chargingLimitSource": limit_source,
+                        "isGridCritical": "False",
+                    },
+                    "chargingSchedule": charging_schedule(charge_limit)
+				}]);
+			 	_websocket.send(LSN);
+			}
+             function NotifyEVChargingSchedule(charge_limit = 10, evse_id = 1) {
+				sessionStorage.setItem('LastAction', "NotifyEVChargingSchedule");
+				var NECS = JSON.stringify([2, id, "NotifyEVChargingSchedule", {
+					"evseId": evse_id,
+                    "timeBase": formatDate(new Date()),
+                    "chargingSchedule": charging_schedule(charge_limit)
+				}]);
+			 	_websocket.send(NECS);
+			}
+
+             function charging_schedule(charge_limit){
+                 return {"chargingRateUnit": "A", 
+                     "chargingSchedulePeriod": {
+                         "startPeriod": 0,
+                         "limit": charge_limit
+                     }
+                 }
+             }
 
 			$('#connect').click(function() {
 				$('.indicator').hide();
@@ -816,7 +866,18 @@
 				updateTransaction();
 			});
 
-			$('#stop').click(function() {
+            $('#update_suspendedev').click(function() {
+               updateTransaction(charger_state = "SuspendedEV");
+             });
+
+            $('#update_suspendedevse').click(function() {
+               updateTransaction(charger_state = "SuspendedEVSE");
+            });
+
+            $('#update_charging').click(function() {
+               updateTransaction(charger_state = "Charging");
+            });
+            $('#stop').click(function() {
 				stopTransaction();
 			});
 
@@ -841,28 +902,46 @@
 				var DT = JSON.stringify([2, id, "DataTransfer", {
 					"vendorId": "rus.avt.cp",
 					"messageId": "GetChargeInstruction",
-					"data": ""
+				 	"data": ""
 				}]);
-				_websocket.send(DT);
+				 _websocket.send(DT);
 
 			});
 			
 			$('#clearedChargingLimit').click(function() {
 				sessionStorage.setItem('LastAction', "ClearedChargingLimit");
 				var CCL = JSON.stringify([2, id, "ClearedChargingLimit", {
-					"chargingLimitSource": "Other",
+				 	"chargingLimitSource": "Other",
 					"evseId": "2"
 				}]);
 				_websocket.send(CCL);
 
 			});
+            
+            $('#logstatus_uploading').click(function() {
+				LogStatusNotification();
+			});
+            
+            $('#logstatus_uploaded').click(function() {
+				LogStatusNotification("Uploaded");
+			});
+            
+            $('#notify_charging_limit').click(function() {
+				NotifyChargingLimit();
+			});
+            
+            $('#notify_ev_charging_schedule').click(function() {
+				NotifyEVChargingSchedule();
+			});
+
+
 
 			$('#connect').on('change', function() {
 
 				if (_websocket) {
 					_websocket.close(3001);
-				}
-			});
+				} 
+			}); 
 		</script>
 	</body>
 </html>
