@@ -728,7 +728,7 @@
 					return "StartTransaction";
 				} else if (1 == 2) {
 					alert("else");
-				 }
+				}
 
 			}
 
@@ -764,9 +764,9 @@
 					"timestamp": formatDate(new Date()),
 					"connectorStatus": "Available",
 					"evseId": 2,
-			 		"connectorId": 2
+					"connectorId": 2
 				}]);
-			 	_websocket.send(SN);
+				_websocket.send(SN);
 			}
 
 			function meterValues() {
@@ -919,19 +919,19 @@
 
 			});
 
-            $('#logstatus_uploading').click(function() {
+			$('#logstatus_uploading').click(function() {
 				LogStatusNotification();
 			});
 
-            $('#logstatus_uploaded').click(function() {
+			$('#logstatus_uploaded').click(function() {
 				LogStatusNotification("Uploaded");
 			});
 
-            $('#notify_charging_limit').click(function() {
+			$('#notify_charging_limit').click(function() {
 				NotifyChargingLimit();
 			});
 
-            $('#notify_ev_charging_schedule').click(function() {
+			$('#notify_ev_charging_schedule').click(function() {
 				NotifyEVChargingSchedule();
 			});
 
