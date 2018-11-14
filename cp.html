@@ -78,7 +78,7 @@
 				OCPP-J2.0
 			</option>
 		</select>
-		<input id="CP" type="text" placeholder="ChargePoint ID" value="ws://10.15.1.20:9000/TMH_Test" />
+		<input id="CP" type="text" placeholder="ChargePoint ID" value="ws://127.0.0.1:8080/steve/websocket/CentralSystemService/CP" />
 		<button id="connect">Connect</button>
 		<button id="send">Authorize</button>
 		<button id="start">Start Transaction - EVDetected</button>
@@ -586,8 +586,8 @@
 				sessionStorage.setItem('LastAction', "Authorize");
 				var Auth = JSON.stringify([2, id, "Authorize", {
 					"idToken": {
-						"idToken": "0478446A313480",
-						"type": "ISO14443"
+						"idToken": "TAG1",
+						"type": "Central"
 					},
 					"evseId": [1,2,3,4] //Just to test
 				}]);
@@ -619,8 +619,8 @@
 					"triggerReason": "Authorized",
 					"seqNo": 0,
 					"idToken": {
-						"idToken": "0478446A313480",
-						"type": "ISO14443"
+						"idToken": "TAG1",
+						"type": "Central"
 					},
 					"evse": {
 						"id": 2,
@@ -649,8 +649,8 @@
 					"triggerReason": "MeterValuePeriodic",
 					"seqNo": 0,
 					"idToken": {
-						"idToken": "0478446A313480",
-						"type": "ISO14443"
+						"idToken": "TAG1",
+						"type": "Central"
 					},
 					"evse": {
 						"id": 2,
@@ -693,8 +693,8 @@
 					"triggerReason": "Deauthorized",
 					"seqNo": 0,
 					"idToken": {
-						"idToken": "0478446A313480",
-						"type": "ISO14443"
+						"idToken": "TAG1",
+						"type": "Central"
 					},
 					"evse": {
 						"id": 2,
