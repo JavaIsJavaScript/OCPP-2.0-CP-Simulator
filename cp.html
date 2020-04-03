@@ -634,7 +634,10 @@
 					"meterValue": [{
 						"timestamp": formatDate(new Date()),
 						"sampledValue": [{
-							"value": 0
+							"value": 0,
+							"unitOfMeasure": {
+								"unit": 'Wh'
+							}
 						}]
 					}]
 				}]);
@@ -664,7 +667,10 @@
 					"meterValue": [{
 						"timestamp": formatDate(new Date()),
 						"sampledValue": [{
-							"value": 10
+							"value": 10,
+							"unitOfMeasure": {
+								"unit": 'Wh'
+							}
 						}, {
 							"value": 15,
 							"context": "Sample.Periodic",
@@ -672,7 +678,7 @@
 							"phase": "L1",
 							"location": "EV",
 							"unitOfMeasure": {
-								"unit": "5"
+								"unit": "Wh"
 							}
 						}]
 					}]
@@ -707,7 +713,10 @@
 					"meterValue": [{
 						"timestamp": formatDate(new Date()),
 						"sampledValue": [{
-							"value": 20
+							"value": 20,
+							"unitOfMeasure": {
+								"unit": 'Wh'
+							}
 						}]
 					}]
 				}]);
