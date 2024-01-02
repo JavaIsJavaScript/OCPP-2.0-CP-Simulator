@@ -4,5 +4,3 @@ A really simple cp simulator, that works with OCPP 2.0
 
 To start working change the endpoint URL with the Charge Point in the end
 Make sure the Charge Point is registered
-
-Upgraded to 2.0 from https://github.com/nenecmrf/OCPP-J-CP-Simulator
